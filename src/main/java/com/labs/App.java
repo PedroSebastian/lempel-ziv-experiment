@@ -1,12 +1,16 @@
 package com.labs;
 
 import com.sauljohnson.lizard.LzwCompressor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class App {
+    private static final Logger logger = LogManager.getLogger(App.class);
+
     /**
      * Application entry point.
      *
@@ -20,9 +24,9 @@ public class App {
             lzwCompressor.compress("Hello World".getBytes(StandardCharsets.UTF_8));
 
             final long finish = System.nanoTime();
-            System.out.println(((double) (finish - reference)) / 1000000000.0);  // In seconds
+            logger.info(((double) (finish - reference)) / 1000000000.0);  // In seconds
         } catch (IOException exception) {
-            System.out.println(exception.getMessage());
+            logger.error(exception.getMessage());
         }
     }
 }
