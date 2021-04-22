@@ -5,9 +5,7 @@ import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -33,18 +31,26 @@ public class App {
                 final String fileName = commandLine.getOptionValue("file");
 
                 file = Files.readAllBytes(Paths.get(fileName));
-                System.out.println(file.toString());
             } else {
                 throw new IllegalArgumentException("Invalid argument");
             }
 
-            final long reference = System.nanoTime();
+            long reference = System.nanoTime();
 
             LzwCompressor lzwCompressor = new LzwCompressor();
-            lzwCompressor.compress("Hello World".getBytes(StandardCharsets.UTF_8));
+            final byte[] compressed = lzwCompressor.compress(file).clone();
 
-            final long finish = System.nanoTime();
-            logger.info(((double) (finish - reference)) / 1000000000.0);  // In seconds
+            long finish = System.nanoTime();
+
+            logger.info("Tamanho inicial: " + file.length + " bytes");
+            logger.info("Tamanho final: " + compressed.length + " bytes");
+            logger.info("Tempo de compressão: " + (((double) (finish - reference)) / 1000000000.0) + " segundos");  // In seconds
+
+            reference = System.nanoTime();
+
+            lzwCompressor.decompress(compressed);
+            finish = System.nanoTime();
+            logger.info("Tempo de descompressão: " + (((double) (finish - reference)) / 1000000000.0) + " segundos");  // In seconds
         } catch (IOException | ParseException | IllegalArgumentException exception) {
             logger.error(exception.getMessage());
         }
